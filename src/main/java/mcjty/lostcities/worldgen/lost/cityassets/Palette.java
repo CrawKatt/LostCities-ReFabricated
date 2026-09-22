@@ -13,7 +13,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -81,7 +80,7 @@ public class Palette implements ILostCityAsset {
                 }
             } else if (entry.getVariant() != null) {
                 String variantName = entry.getVariant();
-                MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+                MinecraftServer server = LostCities.getServer();
                 ServerLevel level = server.getLevel(Level.OVERWORLD);
                 Variant variant = AssetRegistries.VARIANTS.getOrThrow(level, variantName);
                 List<Pair<Integer, BlockState>> blocks = variant.getBlocks();

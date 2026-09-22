@@ -3,6 +3,7 @@ package mcjty.lostcities.varia;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import mcjty.lostcities.LostCities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -14,7 +15,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +30,7 @@ public class WorldTools {
     }
 
     public static ServerLevel getOverworld() {
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        MinecraftServer server = LostCities.getServer();
         return server.getLevel(Level.OVERWORLD);
     }
 
@@ -42,14 +42,14 @@ public class WorldTools {
     public static ServerLevel loadWorld(ResourceKey<Level> type) {
         ServerLevel world = getWorld(type);
         if (world == null) {
-            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+            MinecraftServer server = LostCities.getServer();
             return server.getLevel(type);
         }
         return world;
     }
 
     public static ServerLevel getWorld(ResourceKey<Level> type) {
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        MinecraftServer server = LostCities.getServer();
         return server.getLevel(type);
     }
 

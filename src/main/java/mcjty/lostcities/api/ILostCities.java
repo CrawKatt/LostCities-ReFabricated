@@ -7,16 +7,14 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 
 /**
- * Main interface for this mod. Use this to get city information
- * Get a reference to an implementation of this interface by calling:
- *         InterModComms.sendTo(ILostCities.LOSTCITIES, ILostCities.GET_LOST_CITIES, ModSetup.GetLostCities::new);
+ * Main interface for retrieving Lost Cities world information.
  */
 public interface ILostCities {
 
     // MODID for Lost Cities
     String LOSTCITIES = "lostcities";
 
-    // IMC message for getting ILostCities
+    // Legacy NeoForge IMC identifiers retained for API compatibility
     String GET_LOST_CITIES = "getLostCities";
     // IMC message for getting ILostCitiesPre
     String GET_LOST_CITIES_PRE = "getLostCitiesPre";

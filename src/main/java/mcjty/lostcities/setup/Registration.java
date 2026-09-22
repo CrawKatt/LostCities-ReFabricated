@@ -1,44 +1,40 @@
 package mcjty.lostcities.setup;
 
 
-import com.mojang.serialization.Codec;
 import mcjty.lostcities.LostCities;
 import mcjty.lostcities.worldgen.LostCityFeature;
 import mcjty.lostcities.worldgen.LostCitySphereFeature;
+import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.level.levelgen.feature.Feature;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
-
+import net.minecraft.world.level.levelgen.GenerationStep;
 import java.util.function.Supplier;
 
 public class Registration {
 
-    public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(Registries.FEATURE, LostCities.MODID);
-    public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, LostCities.MODID);
-
-    public static final Supplier<AttachmentType<Boolean>> ATTACHMENT_TYPE_SPAWNSET = ATTACHMENT_TYPES.register("spawnset", () -> AttachmentType.builder(() -> false)
-            .serialize(Codec.BOOL)
-            .copyOnDeath()
-            .build());
-
-    public static void init(IEventBus bus) {
-        FEATURES.register(bus);
-        ATTACHMENT_TYPES.register(bus);
-    }
-
-    public static final DeferredHolder<Feature<?>, LostCityFeature> LOSTCITY_FEATURE = FEATURES.register("lostcity", LostCityFeature::new);
-    public static final DeferredHolder<Feature<?>, LostCitySphereFeature> LOSTCITY_SPHERE_FEATURE = FEATURES.register("spheres", LostCitySphereFeature::new);
+    private static final LostCityFeature LOSTCITY_FEATURE_INSTANCE = new LostCityFeature();
+    private static final LostCitySphereFeature LOSTCITY_SPHERE_FEATURE_INSTANCE = new LostCitySphereFeature();
+    public static final Supplier<LostCityFeature> LOSTCITY_FEATURE = () -> LOSTCITY_FEATURE_INSTANCE;
+    public static final Supplier<LostCitySphereFeature> LOSTCITY_SPHERE_FEATURE = () -> LOSTCITY_SPHERE_FEATURE_INSTANCE;
 
     public static final ResourceLocation LOSTCITY = ResourceLocation.fromNamespaceAndPath(LostCities.MODID, "lostcity");
 
     public static final ResourceKey<DimensionType> DIMENSION_TYPE = ResourceKey.create(Registries.DIMENSION_TYPE, LOSTCITY);
     public static final ResourceKey<Level> DIMENSION = ResourceKey.create(Registries.DIMENSION, LOSTCITY);
+
+    public static void init() {
+        Registry.register(BuiltInRegistries.FEATURE, LOSTCITY, LOSTCITY_FEATURE_INSTANCE);
+        Registry.register(BuiltInRegistries.FEATURE, ResourceLocation.fromNamespaceAndPath(LostCities.MODID, "spheres"), LOSTCITY_SPHERE_FEATURE_INSTANCE);
+        BiomeModifications.addFeature(BiomeSelectors.tag(BiomeTags.IS_OVERWORLD), GenerationStep.Decoration.RAW_GENERATION,
+                ResourceKey.create(Registries.PLACED_FEATURE, ResourceLocation.fromNamespaceAndPath(LostCities.MODID, "lostcities")));
+        BiomeModifications.addFeature(BiomeSelectors.tag(BiomeTags.IS_OVERWORLD), GenerationStep.Decoration.TOP_LAYER_MODIFICATION,
+                ResourceKey.create(Registries.PLACED_FEATURE, ResourceLocation.fromNamespaceAndPath(LostCities.MODID, "spheres")));
+    }
 }

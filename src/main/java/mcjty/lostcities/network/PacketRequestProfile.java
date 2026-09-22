@@ -1,6 +1,7 @@
 package mcjty.lostcities.network;
 
 import mcjty.lostcities.LostCities;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -9,7 +10,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record PacketRequestProfile(ResourceKey<Level> dimension) implements CustomPacketPayload {
 
@@ -25,8 +25,8 @@ public record PacketRequestProfile(ResourceKey<Level> dimension) implements Cust
         return TYPE;
     }
 
-    public void handle(IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
+    public void handle(ServerPlayNetworking.Context ctx) {
+        ctx.server().execute(() -> {
             // @todo 1.14
 //            ServerPlayerEntity player = ctx.get().getSender();
 //            LostCityProfile profile = WorldTypeTools.getProfile(WorldTools.getWorld(dimension));

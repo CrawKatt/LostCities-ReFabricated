@@ -28,6 +28,13 @@ repositories {
             includeGroup 'org.parchmentmc.data'
         }
     }
+    maven {
+        name = 'Fuzs Mod Resources'
+        url = 'https://raw.githubusercontent.com/Fuzss/modresources/main/maven/'
+        content {
+            includeGroup 'fuzs.forgeconfigapiport'
+        }
+    }
 }
 
 sourceSets.main.resources {
@@ -43,6 +50,16 @@ loom {
     if (aw.exists()) {
         accessWidenerPath.set(aw)
     }
+    runs {
+        datagen {
+            server()
+            name 'Fabric Data Generation'
+            vmArg '-Dfabric-api.datagen'
+            vmArg '-Dfabric-api.datagen.output-dir=' + file('src/generated/resources').absolutePath
+            vmArg '-Dfabric-api.datagen.modid=' + mod_id
+            runDir 'build/datagen'
+        }
+    }
 }
 
 dependencies {
@@ -53,6 +70,7 @@ dependencies {
     }
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    modImplementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forge_config_api_port_version}"
     compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 }
 
@@ -63,6 +81,7 @@ processResources {
             'mod_name'             : mod_name,
             'minecraft_version'    : minecraft_version,
             'fabric_loader_version': fabric_loader_version,
+            'forge_config_api_port_version': forge_config_api_port_version,
             'java_version'         : java_version
     ]
     filesMatching('fabric.mod.json') {

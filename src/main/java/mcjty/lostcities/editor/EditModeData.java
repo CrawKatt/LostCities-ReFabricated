@@ -31,7 +31,7 @@ public class EditModeData extends SavedData {
     public static EditModeData getData() {
         ServerLevel overworld = WorldTools.getOverworld();
         DimensionDataStorage storage = overworld.getDataStorage();
-        return storage.computeIfAbsent(new Factory<>(EditModeData::new, (compoundTag, provider) -> new EditModeData(compoundTag)), NAME);
+        return storage.computeIfAbsent(new Factory<>(EditModeData::new, (compoundTag, provider) -> new EditModeData(compoundTag), null), NAME);
     }
 
     public EditModeData() {

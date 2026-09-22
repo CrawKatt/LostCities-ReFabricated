@@ -79,7 +79,7 @@ public class LostCityWorldGenData extends SavedData {
             throw new IllegalStateException("Cannot access Lost Cities world generation data without an overworld");
         }
         DimensionDataStorage storage = overworld.getDataStorage();
-        return storage.computeIfAbsent(new Factory<>(LostCityWorldGenData::new, LostCityWorldGenData::new), NAME);
+        return storage.computeIfAbsent(new Factory<>(LostCityWorldGenData::new, LostCityWorldGenData::new, null), NAME);
     }
 
     public static void initializeNewWorld(ServerLevel level) {

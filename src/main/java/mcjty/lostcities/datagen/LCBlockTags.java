@@ -1,26 +1,24 @@
 package mcjty.lostcities.datagen;
 
-import mcjty.lostcities.LostCities;
 import mcjty.lostcities.worldgen.LostTags;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.BlockTagsProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nonnull;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-public class LCBlockTags extends BlockTagsProvider {
+public class LCBlockTags extends FabricTagProvider.BlockTagProvider {
 
-    public LCBlockTags(DataGenerator generator, CompletableFuture<HolderLookup.Provider> lookupProvider , ExistingFileHelper helper) {
-        super(generator.getPackOutput(), lookupProvider, LostCities.MODID, helper);
+    public LCBlockTags(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(output, lookupProvider);
     }
 
     private static final Set<TagKey<Block>> PLANT_TAGS = Set.of(
@@ -35,17 +33,17 @@ public class LCBlockTags extends BlockTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider provider) {
         for (TagKey<Block> tag : PLANT_TAGS) {
-            tag(LostTags.FOLIAGE_TAG).addTag(tag);
+            tag(LostTags.FOLIAGE_TAG).addOptionalTag(tag.location());
         }
-        tag(LostTags.EASY_BREAKABLE_TAG).addTags(Tags.Blocks.GLASS_BLOCKS);
+        tag(LostTags.EASY_BREAKABLE_TAG).addOptionalTag(ConventionalBlockTags.GLASS_BLOCKS.location());
         BuiltInRegistries.BLOCK.stream().forEach(block -> {
             if (block.defaultBlockState().getDestroySpeed(null, null) < 0.6f) {
-                tag(LostTags.EASY_BREAKABLE_TAG).add(block);
+                tag(LostTags.EASY_BREAKABLE_TAG).add(block.builtInRegistryHolder().key());
             }
         });
 
         // Keep the lighting tag reproducible alongside the other generated block tags.
-        tag(LostTags.LIGHTS_TAG).add(
+        add(LostTags.LIGHTS_TAG,
                 Blocks.LAVA, Blocks.BROWN_MUSHROOM, Blocks.TORCH, Blocks.WALL_TORCH,
                 Blocks.FIRE, Blocks.SOUL_FIRE, Blocks.REDSTONE_TORCH, Blocks.REDSTONE_WALL_TORCH,
                 Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH, Blocks.GLOWSTONE, Blocks.NETHER_PORTAL,
@@ -59,12 +57,18 @@ public class LCBlockTags extends BlockTagsProvider {
                 Blocks.SCULK_CATALYST, Blocks.OCHRE_FROGLIGHT, Blocks.VERDANT_FROGLIGHT, Blocks.PEARLESCENT_FROGLIGHT);
 
         tag(LostTags.ROTATABLE_TAG)
-                .addTag(net.minecraft.tags.BlockTags.STAIRS)
-                .addTag(net.minecraft.tags.BlockTags.DOORS);
-        tag(LostTags.NOT_BREAKABLE_TAG).add(Blocks.BEDROCK, Blocks.END_PORTAL, Blocks.END_PORTAL_FRAME, Blocks.END_GATEWAY);
+                .addOptionalTag(net.minecraft.tags.BlockTags.STAIRS.location())
+                .addOptionalTag(net.minecraft.tags.BlockTags.DOORS.location());
+        add(LostTags.NOT_BREAKABLE_TAG, Blocks.BEDROCK, Blocks.END_PORTAL, Blocks.END_PORTAL_FRAME, Blocks.END_GATEWAY);
 
-        tag(LostTags.NEEDSPOI_TAG).add(Blocks.BREWING_STAND, Blocks.CAULDRON, Blocks.BARREL, Blocks.BLAST_FURNACE, Blocks.SMOKER,
+        add(LostTags.NEEDSPOI_TAG, Blocks.BREWING_STAND, Blocks.CAULDRON, Blocks.BARREL, Blocks.BLAST_FURNACE, Blocks.SMOKER,
                 Blocks.COMPOSTER, Blocks.FLETCHING_TABLE, Blocks.LECTERN, Blocks.STONECUTTER, Blocks.LOOM, Blocks.SMITHING_TABLE, Blocks.GRINDSTONE);
+    }
+
+    private void add(TagKey<Block> tag, Block... blocks) {
+        for (Block block : blocks) {
+            tag(tag).add(block.builtInRegistryHolder().key());
+        }
     }
 
     @Override

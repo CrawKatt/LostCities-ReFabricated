@@ -82,7 +82,7 @@ public class LostCityHighwayData extends SavedData {
             throw new IllegalStateException("Cannot access Lost Cities highway data without an overworld");
         }
         DimensionDataStorage storage = overworld.getDataStorage();
-        return storage.computeIfAbsent(new Factory<>(LostCityHighwayData::new, LostCityHighwayData::new), NAME);
+        return storage.computeIfAbsent(new Factory<>(LostCityHighwayData::new, LostCityHighwayData::new, null), NAME);
     }
 
     /**

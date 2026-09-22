@@ -25,7 +25,7 @@ public class LostData extends SavedData {
         MinecraftServer server = level.getServer();
         ServerLevel overworld = server.getLevel(Level.OVERWORLD);
         DimensionDataStorage storage = overworld.getDataStorage();
-        return storage.computeIfAbsent(new Factory<>(LostData::new, LostData::new), NAME);
+        return storage.computeIfAbsent(new Factory<>(LostData::new, LostData::new, null), NAME);
     }
 
     public LostData() {

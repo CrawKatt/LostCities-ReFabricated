@@ -4,8 +4,8 @@ import java.util.function.Consumer;
 
 /**
  * This API is separate from ILostCities and is meant to be used during
- * mod construction. It allows another mod to register new standard profiles right
- * before the FMLCommonSetupEvent
+ * mod initialization. It allows another mod to register new standard profiles
+ * before Lost Cities initializes its profiles.
  */
 public interface ILostCitiesPre {
 

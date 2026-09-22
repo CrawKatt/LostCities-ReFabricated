@@ -6,6 +6,7 @@ import mcjty.lostcities.config.ProfileSetup;
 import mcjty.lostcities.setup.Config;
 import mcjty.lostcities.setup.ForgeEventHandlers;
 import mcjty.lostcities.worldgen.lost.cityassets.AssetRegistries;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBiomeTags;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.WorldGenRegion;
@@ -16,7 +17,6 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.neoforged.neoforge.common.Tags;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -52,7 +52,7 @@ public class LostCityFeature extends Feature<NoneFeatureConfiguration> {
             return runWithDimensionInfo(level, diminfo -> {
                 ChunkPos center = region.getCenter();
                 Holder<Biome> biome = region.getBiome(center.getMiddleBlockPosition(60));
-                if (biome.is(Tags.Biomes.IS_VOID)) {
+                if (biome.is(ConventionalBiomeTags.IS_VOID)) {
                     return false;
                 }
 

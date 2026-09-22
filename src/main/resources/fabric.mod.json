@@ -12,10 +12,25 @@
   },
   "license": "MIT",
   "environment": "*",
+  "entrypoints": {
+    "main": [
+      "mcjty.lostcities.LostCities"
+    ],
+    "client": [
+      "mcjty.lostcities.setup.ClientSetup"
+    ],
+    "fabric-datagen": [
+      "mcjty.lostcities.datagen.DataGenerators"
+    ]
+  },
+  "mixins": [
+    "lostcities.mixins.json"
+  ],
   "accessWidener": "META-INF/lostcities.accesswidener",
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",
     "fabric-api": "*",
+    "forgeconfigapiport": ">=${forge_config_api_port_version}",
     "minecraft": "${minecraft_version}",
     "java": ">=${java_version}"
   }

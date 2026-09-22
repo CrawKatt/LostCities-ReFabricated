@@ -1,66 +1,77 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.firstdark.dev/releases' }
-        mavenCentral()
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath 'com.hypherionmc.modutils:modpublisher:2.2.1'
-    }
-}
-
 plugins {
     id 'java-library'
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.1.4'
-}
-
-apply plugin: 'com.hypherionmc.modutils.modpublisher'
-
-if (project.file('../gradletools.gradle').exists()) {
-    apply from: '../gradletools.gradle'
-} else {
-    apply from: 'https://raw.githubusercontent.com/McJtyMods/MultiWorkspace/1.21_neo/gradletools.gradle'
+    id 'fabric-loom' version "${loom_version}"
 }
 
 group = "com.github.mcjty"
-archivesBaseName = "lostcities"
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+version = project.version
+
+base {
+    archivesName = "${mod_id}-fabric-${minecraft_version}"
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(Integer.parseInt(java_version))
 
 if (System.getenv('BUILD_NUMBER') != null) {
     version += "-${System.getenv('BUILD_NUMBER')}"
 }
 
-repos()
-at()
-runs()
-jars()
+repositories {
+    mavenCentral()
+    maven {
+        name = 'ParchmentMC'
+        url = 'https://maven.parchmentmc.org'
+        content {
+            includeGroup 'org.parchmentmc.data'
+        }
+    }
+}
 
 sourceSets.main.resources {
     srcDir 'src/generated/resources'
 }
 
-dependencies {
-    mc()
-//    jei()
-    top()
-//    runtimeOnly fg.deobf('local:xaeroworldmap-forge-1.20.1:1.43.0')
+tasks.withType(Jar).configureEach {
+    includeEmptyDirs = false
 }
 
-modpublisher(['the-one-probe'], [], ['the-one-probe'], [], [])
-
-
-subsystems {
-    parchment {
-        minecraftVersion = "${parchment_minecraft_version}"
-        mappingsVersion = "${parchment_version}"
+loom {
+    def aw = file("src/main/resources/META-INF/${mod_id}.accesswidener")
+    if (aw.exists()) {
+        accessWidenerPath.set(aw)
     }
 }
 
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
+    }
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+}
 
-task apiJar(type: Jar) {
+processResources {
+    def expandProps = [
+            'version'              : version,
+            'mod_id'               : mod_id,
+            'mod_name'             : mod_name,
+            'minecraft_version'    : minecraft_version,
+            'fabric_loader_version': fabric_loader_version,
+            'java_version'         : java_version
+    ]
+    filesMatching('fabric.mod.json') {
+        expand expandProps
+    }
+    inputs.properties(expandProps)
+}
+
+tasks.register('apiJar', Jar) {
     archiveClassifier = "api"
     from(sourceSets.main.output) {
         include "mcjty/lostcities/api/**"
@@ -76,7 +87,7 @@ publishing {
         from components.java
         artifact apiJar
 
-        artifactId = project.archivesBaseName
+        artifactId = mod_id
         pom {
             name = 'LostCities'
             description = 'Lost Cities'
